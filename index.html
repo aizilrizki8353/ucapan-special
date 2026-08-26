@@ -1,28 +1,151 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #0000ff;
-            font-family: Arial, sans-serif;
-        }
-        .card {
-            background: white;
-            padding: 30px 50px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            font-size: 2rem;
-            color: #a52a2a;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foto 3D dengan Efek Love</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #0f172a;
+      font-family: sans-serif;
+    }
+
+    /* Container Kartu Foto */
+    .card-container {
+      width: 300px;
+      height: 400px;
+      perspective: 1000px;
+    }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.5);
+      transform-style: preserve-3d;
+      transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+      cursor: pointer;
+    }
+
+    /* Styling animasi love */
+    .heart {
+      position: absolute;
+      color: #ff4d6d;
+      font-size: 20px;
+      pointer-events: none;
+      animation: floatUp 1s ease-out forwards;
+      z-index: 10;
+      user-select: none;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-50px) scale(1.5);
+      }
+    }
+
+    /* Gambar Foto */
+    .card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      transition: transform 0.1s ease-out;
+    }
+
+    /* Efek Kilauan */
+    .shine {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(255, 255, 255, 0) 60%
+      );
+      opacity: 0;
+      transition: opacity 0.1s ease-out;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
-    <div class="card">
-         BERSATU KITA TEGUH BERCERAI KITA RUNTUH 
+
+  <div class="card-container" id="container">
+    <div class="card" id="card">
+      <img src="foto-saya.jpeg" alt="Foto">
+      <div class="shine" id="shine"></div>
     </div>
+  </div>
+
+  <script>
+    const container = document.getElementById('container');
+    const card = document.getElementById('card');
+    const shine = document.getElementById('shine');
+
+    // Efek Miring 3D & Kilau Cahaya
+    container.addEventListener('mousemove', (e) => {
+      const rect = container.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      const rotateX = ((y - centerY) / centerY) * -15;
+      const rotateY = ((x - centerX) / centerX) * 15;
+
+      card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
+      
+      shine.style.opacity = '1';
+      shine.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 80%)`;
+    });
+
+    container.addEventListener('mouseleave', () => {
+      card.style.transform = 'rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+      shine.style.opacity = '0';
+    });
+
+    // FUNGSI UTAMA: Menambahkan animasi Love saat foto diklik
+    card.addEventListener('click', (e) => {
+      const rect = card.getBoundingClientRect();
+      
+      // Menentukan posisi tepat di mana mouse mengklik foto
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      // Membuat elemen div love baru
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.innerHTML = '❤️'; // Bisa diganti emoji lain seperti 💕 atau 💖
+      
+      // Menempatkan love di posisi klik
+      heart.style.left = `${x - 10}px`;
+      heart.style.top = `${y - 10}px`;
+
+      // Memasukkan love ke dalam kartu foto
+      card.appendChild(heart);
+
+      // Menghapus elemen dari memori setelah animasi selesai (1 detik)
+      setTimeout(() => {
+        heart.remove();
+      }, 1000);
+    });
+  </script>
+
 </body>
 </html>
